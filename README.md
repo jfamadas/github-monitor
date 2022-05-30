@@ -24,7 +24,7 @@ To get a local copy up and running follow these simple example steps.
    ```sh
    python extract.py -t [ENTER YOUR GITHUB TOKEN HERE]
    ```
-2. Start the API (it will run at 127.0.0.1:5000)
+2. Start the API in a new terminal (it will run at 127.0.0.1:5000)
    ```sh
    python api.py
    ```
