@@ -1,6 +1,9 @@
 # GitHub-monitor
 Monitoring WatchEvent, PullRequestEvent and IssuesEvent from the GitHub API
 
+## Context Diagram
+
+
 ## Getting Started
 
 This is an example of how you may give instructions on setting up your project locally.
@@ -18,7 +21,7 @@ To get a local copy up and running follow these simple example steps.
    ```
 
 
-### Usage
+## Usage
 
 1. Start data extractor
    ```sh
@@ -37,3 +40,7 @@ With the API running, you can send GET requests to the following endpoints:
 
 - /time-between-requests/[github_user]/[repository]
   - Calculate the average time between pull requests for a given repository
+
+### Examples
+
+Find some examples in [/tests](https://github.com/jfamadas/github-monitor/tree/main/tests)

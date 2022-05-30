@@ -5,6 +5,7 @@ utils/
 stop.py
 start.py
 tests/test_api.py
+C4-documentation/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
