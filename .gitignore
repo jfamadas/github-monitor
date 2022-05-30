@@ -1,5 +1,9 @@
 # my ignores
 .idea
+tmp/
+utils/
+stop.py
+start.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -2,7 +2,6 @@ import sqlite3
 import requests
 import time
 from database.setup_database import DB_PATH
-import datetime
 from dateutil import parser
 from argparse import ArgumentParser
 
@@ -24,6 +23,17 @@ def get_rate_limit(token=None):
 
 
 def get_events(session, url, etag, db_cursor, db_connection, token=None):
+    """
+    Gets all WatchEvent, PullRequestEvent and IssuesEvent from the GitHub event API and saves them into an sqlite
+    database.
+    :param session: requests session to query the GitHub API
+    :param url: url to query github API
+    :param etag: Last query identifier. If the response is the same, the identifier is the same, so it is not processed.
+    :param db_cursor: Cursor of the sqlite database.
+    :param db_connection: Connection to the sqlite database.
+    :param token: GitHub token (optional).
+    :return: Query response identifier.
+    """
     headers = {"accept": "application/vnd.github.v3+json",
                "If-None-Match": etag}
     if token:
@@ -36,13 +46,12 @@ def get_events(session, url, etag, db_cursor, db_connection, token=None):
 
         for event in response.json():
             if event["type"] in ["WatchEvent", "PullRequestEvent", "IssuesEvent"]:
-                created_at = int(parser.parse(event.get("created_at")).timestamp())
+                created_at = int(parser.parse(event.get("created_at")).timestamp())  # Parse the created_at to int
                 insert_data = (event.get("id"), event.get("type"), event.get("repo").get("id"),
                                event.get("repo").get("name"), created_at)
-                db_cursor.execute(
-                    "INSERT OR IGNORE INTO events (id, type, repo_id, repo_name, created_at) VALUES (?, ?, ?, ?, ?)",
-                    insert_data
-                )
+                # The IGNORE in the query triggers when trying to insert an event that already exists in the database.
+                query = "INSERT OR IGNORE INTO events (id, type, repo_id, repo_name, created_at) VALUES (?, ?, ?, ?, ?)"
+                db_cursor.execute(query, insert_data)
         db_connection.commit()
         return response.headers["etag"]
 
@@ -66,8 +75,8 @@ if __name__ == "__main__":
 
     while rate_limit > 0:
         etag = get_events(s, "https://api.github.com/events", etag, cur, con, token)
-        time.sleep(1)
-        rate_limit = get_rate_limit()
+        time.sleep(1)  # With these sleep we are doing 3600 queries/hour so rate_limit should never be < 1400.
+        rate_limit = get_rate_limit(token)
         print("===============================")
         print("RATE LIMIT: " + str(rate_limit))
         print("===============================")
