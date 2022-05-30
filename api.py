@@ -2,13 +2,11 @@ from flask import Flask
 from database.setup_database import DB_PATH
 import sqlite3
 import datetime
-from utils.process_management import save_pid
 
-save_pid("api")
 app = Flask(__name__)
 
 
-@app.route("/eventsByType/<offset_minutes>", methods=["GET"])
+@app.route("/events-by-type/<offset_minutes>", methods=["GET"])
 def get_events_by_type(offset_minutes):
     """
     Return the total number of events grouped by the event type for a given offset (in minutes)
