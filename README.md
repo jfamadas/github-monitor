@@ -37,11 +37,13 @@ With the API running, you can send GET requests to the following endpoints:
 
 - /events-by-type/[offset_minutes]
   - Return the total number of events grouped by the event type for a given offset (in minutes)
-
-
+  - *IMPORTANT: GitHub Events API delay the public events feed by five minutes. [More info.](https://docs.github.com/en/rest/activity/events#list-public-events)*
+      - e.g. "/events-by-type/30" will return events from 30 minutes ago to 5 minutes ago.
+        
+    
 - /time-between-requests/[github_user]/[repository]
   - Calculate the average time between pull requests for a given repository
-
+  
 ### Examples
 
 Find some examples in [/tests](https://github.com/jfamadas/github-monitor/tree/main/tests)
