@@ -2,6 +2,7 @@
 Monitoring WatchEvent, PullRequestEvent and IssuesEvent from the GitHub API
 
 ## Context Diagram
+![Diagram](utils/diagram.jpg)
 
 
 ## Getting Started
