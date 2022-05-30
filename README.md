@@ -31,7 +31,7 @@ To get a local copy up and running follow these simple example steps.
    
 With the API running, you can send GET requests to the following endpoints:
 
-- events-by-type/[offset_minutes]
+- /events-by-type/[offset_minutes]
   - Return the total number of events grouped by the event type for a given offset (in minutes)
 
 

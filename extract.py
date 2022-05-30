@@ -1,7 +1,7 @@
 import sqlite3
 import requests
 import time
-from database.setup_database import DB_PATH
+from database.setup_database import DB_PATH, create_db_sqlite
 from dateutil import parser
 from argparse import ArgumentParser
 
@@ -72,6 +72,8 @@ if __name__ == "__main__":
     # Updatable variables
     rate_limit = get_rate_limit(token)
     etag = ""  # Initialize etag empty
+
+    create_db_sqlite()  # Creates the database if it does not exist.
 
     while rate_limit > 0:
         etag = get_events(s, "https://api.github.com/events", etag, cur, con, token)

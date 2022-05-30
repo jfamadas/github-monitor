@@ -13,12 +13,20 @@ def get_events_by_type(offset_minutes):
     :param offset_minutes: Time duration of the counting window (in minutes)
     :return: dictionary where the event type are the keys and the number of events the values.
     """
+    try:
+        time_bound = int(datetime.datetime.now().timestamp()) - int(offset_minutes) * 60
+
+    except:
+        return {"TypeError": "Offset minutes must be an integer"}, 400
     con = sqlite3.connect(DB_PATH)
     cur = con.cursor()
-    time_bound = int(datetime.datetime.now().timestamp()) - int(offset_minutes) * 60
     query = "SELECT type, count(id) as counter FROM events WHERE created_at >= ? GROUP BY type"
     data = cur.execute(query, [time_bound]).fetchall()
-    result = {data[0][0]: data[0][1], data[1][0]: data[1][1], data[2][0]: data[2][1]}
+
+    result = {"IssuesEvent": 0, "PullRequestEvent": 0, "WatchEvent": 0}
+    for event_type, count in data:
+        result[event_type] = count
+
     return result, 200
 
 
@@ -36,7 +44,7 @@ def get_time_between_requests(github_user, repository):
         SELECT avg(created_at_diff) from (
             SELECT 
                 created_at - lag(created_at,1) over (ORDER BY created_at) as created_at_diff
-            FROM events where repo_name = ?
+            FROM events where repo_name = ? and type = "PullRequestEvent"
             )
     """
     full_repo = github_user + "/" + repository

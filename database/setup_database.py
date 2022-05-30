@@ -1,6 +1,5 @@
 import sqlite3
 
-DB_NAME = "database.db"
 DB_PATH = "database/database.db"  # Relative path from the project root directory
 
 
@@ -9,7 +8,7 @@ def create_db_sqlite():
     Create a new sqlite database with a single 'events' table.
     :return:
     """
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(DB_PATH)
     conn.commit()
 
     cursor = conn.cursor()
@@ -24,7 +23,3 @@ def create_db_sqlite():
         """)
     conn.commit()
     conn.close()
-
-
-if __name__ == "__main__":
-    create_db_sqlite()
