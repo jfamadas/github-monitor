@@ -49,6 +49,9 @@ def get_time_between_requests(github_user, repository):
     """
     full_repo = github_user + "/" + repository
     data = cur.execute(query, [full_repo]).fetchall()
+    if data[0][0] is None:
+        return {"Insuficient Data": "The selected repository does not have enough Pull Requests "
+                                    "to compute an average."}, 400
     return {"average_time": data[0][0]}, 200
 
 
