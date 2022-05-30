@@ -34,16 +34,19 @@ def get_events(session, url, etag, db_cursor, db_connection, token=None):
     :param token: GitHub token (optional).
     :return: Query response identifier.
     """
+    # The If-None-Match header avoids consuming a request from the rate_limit if the resulting etag would be the same.
     headers = {"accept": "application/vnd.github.v3+json",
                "If-None-Match": etag}
+    # If a token has been provided as a parameter, add it to the authorization header.
     if token:
         headers["authorization"] = "token " + token
-    params = {"per_page": "100"}
+    params = {"per_page": "100"}  # 100 is the maximum events per page of a query
     with session.get(url, headers=headers, params=params, stream=True) as response:
-        if response.status_code == 304:
+        if response.status_code == 304:  # If response is 304 means the new etag coincides with the old one
             print("STATUS 304: Resource has not changed.")
             return etag
 
+        # Iterate through all the events
         for event in response.json():
             if event["type"] in ["WatchEvent", "PullRequestEvent", "IssuesEvent"]:
                 created_at = int(parser.parse(event.get("created_at")).timestamp())  # Parse the created_at to int
@@ -70,15 +73,16 @@ if __name__ == "__main__":
     token = args.token
 
     # Updatable variables
-    rate_limit = get_rate_limit(token)
-    etag = ""  # Initialize etag empty
+    rate_limit = get_rate_limit(token)  # Number of queries you can make to GitHub API before reaching the rate limit.
+    etag = ""  # Identifier used by the GitHub API to tell that the data has not changed since the last request.
 
     create_db_sqlite()  # Creates the database if it does not exist.
 
+    # Query the GitHub API every 1 second to get the data.
     while rate_limit > 0:
         etag = get_events(s, "https://api.github.com/events", etag, cur, con, token)
         time.sleep(1)  # With these sleep we are doing 3600 queries/hour so rate_limit should never be < 1400.
-        rate_limit = get_rate_limit(token)
+        rate_limit = get_rate_limit(token)  # Updates rate limit.
         print("===============================")
         print("RATE LIMIT: " + str(rate_limit))
         print("===============================")

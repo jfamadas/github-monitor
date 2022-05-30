@@ -14,8 +14,8 @@ def get_events_by_type(offset_minutes):
     :return: dictionary where the event type are the keys and the number of events the values.
     """
     try:
+        # Compute the "created_at" lower bound to query the database
         time_bound = int(datetime.datetime.now().timestamp()) - int(offset_minutes) * 60
-
     except:
         return {"TypeError": "Offset minutes must be an integer"}, 400
     con = sqlite3.connect(DB_PATH)
@@ -23,6 +23,7 @@ def get_events_by_type(offset_minutes):
     query = "SELECT type, count(id) as counter FROM events WHERE created_at >= ? GROUP BY type"
     data = cur.execute(query, [time_bound]).fetchall()
 
+    # Initialize result in 0 for all types, so if data is empty for any or all types, it will return 0 instead of None.
     result = {"IssuesEvent": 0, "PullRequestEvent": 0, "WatchEvent": 0}
     for event_type, count in data:
         result[event_type] = count
@@ -50,6 +51,7 @@ def get_time_between_requests(github_user, repository):
     full_repo = github_user + "/" + repository
     data = cur.execute(query, [full_repo]).fetchall()
     if data[0][0] is None:
+        # This happens both if there is only one Pull Request or if there aren't any.
         return {"Insuficient Data": "The selected repository does not have enough Pull Requests "
                                     "to compute an average."}, 400
     return {"average_time": data[0][0]}, 200

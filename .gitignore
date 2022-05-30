@@ -4,6 +4,7 @@ tmp/
 utils/
 stop.py
 start.py
+tests/test_api.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
